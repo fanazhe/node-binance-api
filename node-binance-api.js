@@ -499,6 +499,31 @@ let api = function Binance( options = {} ) {
         }
         return promiseRequest( 'v1/order', params, { base:fapi, type:'TRADE', method:'POST' } );
     };
+    const futuresBatchOrders = async ( paramsList = [] ) => {
+        let batchOrders = [];
+        for (let param of paramsList) {
+            // quantity must be string
+            if (param.quantity) param.quantity = '' + param.quantity;
+            // if in the binance futures setting Hedged mode is active, positionSide parameter is mandatory
+            if( typeof param.positionSide === 'undefined' && Binance.options.hedgeMode ){
+                param.positionSide = param.side === 'BUY' ? 'LONG' : 'SHORT';
+            }
+            // LIMIT STOP MARKET STOP_MARKET TAKE_PROFIT TAKE_PROFIT_MARKET
+            // reduceOnly stopPrice
+            if ( param.price ) {
+                // price must be string
+                param.price = '' + param.price;
+                if ( typeof param.type === 'undefined' ) param.type = 'LIMIT';
+            } else {
+                if ( typeof param.type === 'undefined' ) param.type = 'MARKET';
+            }
+            if ( !param.timeInForce && ( param.type.includes( 'LIMIT' ) || param.type === 'STOP' || param.type === 'TAKE_PROFIT' ) ) {
+                param.timeInForce = 'GTX'; // Post only by default. Use GTC for limit orders.
+            }
+            batchOrders.push(param);
+        }
+        return promiseRequest( 'v1/batchOrders', {batchOrders: JSON.stringify(batchOrders)}, { base:fapi, type:'TRADE', method:'POST' } );
+    };
     const deliveryOrder = async ( side, symbol, quantity, price = false, params = {} ) => {
         params.symbol = symbol;
         params.side = side;
@@ -519,6 +544,31 @@ let api = function Binance( options = {} ) {
             params.timeInForce = 'GTX'; // Post only by default. Use GTC for limit orders.
         }
         return promiseRequest( 'v1/order', params, { base:dapi, type:'TRADE', method:'POST' } );
+    };
+    const deliveryBatchOrders = async ( paramsList = [] ) => {
+        let batchOrders = [];
+        for (let param of paramsList) {
+            // quantity must be string
+            if (param.quantity) param.quantity = '' + param.quantity;
+            // if in the binance futures setting Hedged mode is active, positionSide parameter is mandatory
+            if( typeof param.positionSide === 'undefined' && Binance.options.hedgeMode ){
+                param.positionSide = param.side === 'BUY' ? 'LONG' : 'SHORT';
+            }
+            // LIMIT STOP MARKET STOP_MARKET TAKE_PROFIT TAKE_PROFIT_MARKET
+            // reduceOnly stopPrice
+            if ( param.price ) {
+                // price must be string
+                param.price = '' + param.price;
+                if ( typeof param.type === 'undefined' ) param.type = 'LIMIT';
+            } else {
+                if ( typeof param.type === 'undefined' ) param.type = 'MARKET';
+            }
+            if ( !param.timeInForce && ( param.type.includes( 'LIMIT' ) || param.type === 'STOP' || param.type === 'TAKE_PROFIT' ) ) {
+                param.timeInForce = 'GTX'; // Post only by default. Use GTC for limit orders.
+            }
+            batchOrders.push(param);
+        }
+        return promiseRequest( 'v1/batchOrders', {batchOrders: JSON.stringify(batchOrders)}, { base:dapi, type:'TRADE', method:'POST' } );
     };
     const promiseRequest = async ( url, data = {}, flags = {} ) => {
         return new Promise( ( resolve, reject ) => {
@@ -4067,6 +4117,8 @@ let api = function Binance( options = {} ) {
 
         futuresOrder, // side symbol quantity [price] [params]
 
+        futuresBatchOrders,
+
         futuresOrderStatus: async ( symbol, params = {} ) => { // Either orderId or origClientOrderId must be sent
             params.symbol = symbol;
             return promiseRequest( 'v1/order', params, { base:fapi, type:'SIGNED' } );
@@ -4075,6 +4127,11 @@ let api = function Binance( options = {} ) {
         futuresCancel: async ( symbol, params = {} ) => { // Either orderId or origClientOrderId must be sent
             params.symbol = symbol;
             return promiseRequest( 'v1/order', params, { base:fapi, type:'SIGNED', method:'DELETE' } );
+        },
+
+        futuresBatchCancel: async ( symbol, params = {} ) => { // Either orderIdList or origClientOrderIdList must be sent
+            params.symbol = symbol;
+            return promiseRequest( 'v1/batchOrders', params, { base:fapi, type:'SIGNED', method:'DELETE' } );
         },
 
         futuresCancelAll: async ( symbol, params = {} ) => {
@@ -4342,6 +4399,8 @@ let api = function Binance( options = {} ) {
 
         deliveryOrder, // side symbol quantity [price] [params]
 
+        deliveryBatchOrders,
+
         deliveryOrderStatus: async ( symbol, params = {} ) => { // Either orderId or origClientOrderId must be sent
             params.symbol = symbol;
             return promiseRequest( 'v1/order', params, { base:dapi, type:'SIGNED' } );
@@ -4350,6 +4409,11 @@ let api = function Binance( options = {} ) {
         deliveryCancel: async ( symbol, params = {} ) => { // Either orderId or origClientOrderId must be sent
             params.symbol = symbol;
             return promiseRequest( 'v1/order', params, { base:dapi, type:'SIGNED', method:'DELETE' } );
+        },
+
+        deliveryBatchCancel: async ( symbol, params = {} ) => { // Either orderIdList or origClientOrderIdList must be sent
+            params.symbol = symbol;
+            return promiseRequest( 'v1/batchOrders', params, { base:dapi, type:'SIGNED', method:'DELETE' } );
         },
 
         deliveryCancelAll: async ( symbol, params = {} ) => {
