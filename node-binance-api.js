@@ -1089,17 +1089,17 @@ let api = function Binance( options = {} ) {
         let {
             s: symbol,
             S: side,
-            o: orderType,
+            o: type,
             f: timeInForce,
-            q: origAmount,
+            q: origQty,
             p: price,
             ap: avgPrice,
-            X: orderStatus,
-            l: lastFilledQty,
-            z: totalFilledQty,
-            T: tradeTime
+            X: status,
+            l: executedQty,
+            z: cumQty,
+            T: updateTime
         } = data.o;
-        return { symbol, side, orderType, timeInForce, origAmount, price, avgPrice, orderStatus, lastFilledQty, totalFilledQty, eventType, tradeTime, eventTime };
+        return { symbol, side, type, timeInForce, origQty, price, avgPrice, status, executedQty, cumQty, eventType, updateTime, eventTime };
     };
 
     /**
@@ -1115,7 +1115,7 @@ let api = function Binance( options = {} ) {
                 s: symbol,
                 p: priceChange,
                 P: percentChange,
-                w: averagePrice,
+                w: avgPrice,
                 c: close,
                 Q: closeQty,
                 o: open,
@@ -1135,7 +1135,7 @@ let api = function Binance( options = {} ) {
                 symbol,
                 priceChange,
                 percentChange,
-                averagePrice,
+                avgPrice,
                 close,
                 closeQty,
                 open,
@@ -1391,64 +1391,64 @@ let api = function Binance( options = {} ) {
                 // starts with "autoclose-": liquidation order
                 // "adl_autoclose": ADL auto close order
                 S: side,
-                o: orderType,
+                o: type,
                 f: timeInForce,
-                q: originalQuantity,
-                p: originalPrice,
-                ap: averagePrice,
+                q: origQty,
+                p: price,
+                ap: avgPrice,
                 sp: stopPrice, // please ignore with TRAILING_STOP_MARKET order,
                 x: executionType,
-                X: orderStatus,
+                X: status,
                 i: orderId,
-                l: orderLastFilledQuantity,
-                z: orderFilledAccumulatedQuantity,
+                l: executedQty,
+                z: cumQty,
                 L: lastFilledPrice,
                 N: commissionAsset, // will not push if no commission
                 n: commission, // will not push if no commission
-                T: orderTradeTime,
+                T: updateTime,
                 t: tradeId,
-                b: bidsNotional,
+                b: bidNotional,
                 a: askNotional,
                 m: isMakerSide, // is this trade maker side
-                R: isReduceOnly, // is this reduce only
-                wt: stopPriceWorkingType,
-                ot: originalOrderType,
+                R: reduceOnly, // is this reduce only
+                wt: workingType,
+                ot: origType,
                 ps: positionSide,
                 cp: closeAll, // if close-all, pushed with conditional order
-                AP: activationPrice, // only pushed with TRAILING_STOP_MARKET order
-                cr: callbackRate, // only pushed with TRAILING_STOP_MARKET order
+                AP: activatePrice, // only pushed with TRAILING_STOP_MARKET order
+                cr: priceRate, // only pushed with TRAILING_STOP_MARKET order
                 rp: realizedProfit
             } = order;
             return {
                 symbol,
                 clientOrderId,
                 side,
-                orderType,
+                type,
                 timeInForce,
-                originalQuantity,
-                originalPrice,
-                averagePrice,
+                origQty,
+                price,
+                avgPrice,
                 stopPrice,
                 executionType,
-                orderStatus,
+                status,
                 orderId,
-                orderLastFilledQuantity,
-                orderFilledAccumulatedQuantity,
+                executedQty,
+                cumQty,
                 lastFilledPrice,
                 commissionAsset,
                 commission,
-                orderTradeTime,
+                updateTime,
                 tradeId,
-                bidsNotional,
+                bidNotional,
                 askNotional,
                 isMakerSide,
-                isReduceOnly,
-                stopPriceWorkingType,
-                originalOrderType,
+                reduceOnly,
+                workingType,
+                origType,
                 positionSide,
                 closeAll,
-                activationPrice,
-                callbackRate,
+                activatePrice,
+                priceRate,
                 realizedProfit
             };
         };
@@ -1793,17 +1793,17 @@ let api = function Binance( options = {} ) {
         let {
             s: symbol,
             S: side,
-            o: orderType,
+            o: type,
             f: timeInForce,
-            q: origAmount,
+            q: origQty,
             p: price,
             ap: avgPrice,
-            X: orderStatus,
-            l: lastFilledQty,
-            z: totalFilledQty,
-            T: tradeTime
+            X: status,
+            l: executedQty,
+            z: cumQty,
+            T: updateTime
         } = data.o;
-        return { symbol, side, orderType, timeInForce, origAmount, price, avgPrice, orderStatus, lastFilledQty, totalFilledQty, eventType, tradeTime, eventTime };
+        return { symbol, side, type, timeInForce, origQty, price, avgPrice, status, executedQty, cumQty, eventType, updateTime, eventTime };
     };
 
     /**
@@ -1819,7 +1819,7 @@ let api = function Binance( options = {} ) {
                 s: symbol,
                 p: priceChange,
                 P: percentChange,
-                w: averagePrice,
+                w: avgPrice,
                 c: close,
                 Q: closeQty,
                 o: open,
@@ -1839,7 +1839,7 @@ let api = function Binance( options = {} ) {
                 symbol,
                 priceChange,
                 percentChange,
-                averagePrice,
+                avgPrice,
                 close,
                 closeQty,
                 open,
@@ -2026,67 +2026,67 @@ let api = function Binance( options = {} ) {
                 // starts with "autoclose-": liquidation order
                 // "adl_autoclose": ADL auto close order
                 S: side,
-                o: orderType,
+                o: type,
                 f: timeInForce,
-                q: originalQuantity,
-                p: originalPrice,
-                ap: averagePrice,
+                q: origQty,
+                p: price,
+                ap: avgPrice,
                 sp: stopPrice, // please ignore with TRAILING_STOP_MARKET order,
                 x: executionType,
-                X: orderStatus,
+                X: status,
                 i: orderId,
-                l: orderLastFilledQuantity,
-                z: orderFilledAccumulatedQuantity,
+                l: executedQty,
+                z: cumQty,
                 L: lastFilledPrice,
                 ma: marginAsset,
                 N: commissionAsset, // will not push if no commission
                 n: commission, // will not push if no commission
-                T: orderTradeTime,
+                T: updateTime,
                 t: tradeId,
                 rp: realizedProfit,
-                b: bidsNotional,
+                b: bidNotional,
                 a: askNotional,
                 m: isMakerSide, // is this trade maker side
-                R: isReduceOnly, // is this reduce only
-                wt: stopPriceWorkingType,
-                ot: originalOrderType,
+                R: reduceOnly, // is this reduce only
+                wt: workingType,
+                ot: origType,
                 ps: positionSide,
                 cp: closeAll, // if close-all, pushed with conditional order
-                AP: activationPrice, // only pushed with TRAILING_STOP_MARKET order
-                cr: callbackRate, // only pushed with TRAILING_STOP_MARKET order
+                AP: activatePrice, // only pushed with TRAILING_STOP_MARKET order
+                cr: priceRate, // only pushed with TRAILING_STOP_MARKET order
                 pP: priceProtect, // If conditional order trigger is protected
             } = order;
             return {
                 symbol,
                 clientOrderId,
                 side,
-                orderType,
+                type,
                 timeInForce,
-                originalQuantity,
-                originalPrice,
-                averagePrice,
+                origQty,
+                price,
+                avgPrice,
                 stopPrice,
                 executionType,
-                orderStatus,
+                status,
                 orderId,
-                orderLastFilledQuantity,
-                orderFilledAccumulatedQuantity,
+                executedQty,
+                cumQty,
                 lastFilledPrice,
                 marginAsset,
                 commissionAsset,
                 commission,
-                orderTradeTime,
+                updateTime,
                 tradeId,
-                bidsNotional,
+                bidNotional,
                 askNotional,
                 isMakerSide,
-                isReduceOnly,
-                stopPriceWorkingType,
-                originalOrderType,
+                reduceOnly,
+                workingType,
+                origType,
                 positionSide,
                 closeAll,
-                activationPrice,
-                callbackRate,
+                activatePrice,
+                priceRate,
                 realizedProfit,
                 priceProtect,
             };
@@ -2287,7 +2287,7 @@ let api = function Binance( options = {} ) {
                 s: symbol,
                 p: priceChange,
                 P: percentChange,
-                w: averagePrice,
+                w: avgPrice,
                 x: prevClose,
                 c: close,
                 Q: closeQty,
@@ -2312,7 +2312,7 @@ let api = function Binance( options = {} ) {
                 symbol,
                 priceChange,
                 percentChange,
-                averagePrice,
+                avgPrice,
                 prevClose,
                 close,
                 closeQty,
