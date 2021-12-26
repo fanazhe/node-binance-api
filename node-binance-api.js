@@ -21,7 +21,6 @@ let api = function Binance( options = {} ) {
     const stringHash = require( 'string-hash' );
     const async = require( 'async' );
     let base = 'https://api.binance.com/api/';
-    let wapi = 'https://api.binance.com/wapi/';
     let sapi = 'https://api.binance.com/sapi/';
     let fapi = 'https://fapi.binance.com/fapi/';
     let dapi = 'https://dapi.binance.com/dapi/';
@@ -105,7 +104,6 @@ let api = function Binance( options = {} ) {
         if ( typeof Binance.options.urls !== 'undefined' ) {
             const { urls } = Binance.options;
             if ( typeof urls.base === 'string' ) base = urls.base;
-            if ( typeof urls.wapi === 'string' ) wapi = urls.wapi;
             if ( typeof urls.sapi === 'string' ) sapi = urls.sapi;
             if ( typeof urls.fapi === 'string' ) fapi = urls.fapi;
             if ( typeof urls.fapiTest === 'string' ) fapiTest = urls.fapiTest;
@@ -3443,10 +3441,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    publicRequest( wapi + 'v3/systemStatus.html', {}, callback );
+                    publicRequest( sapi + 'v1/system/status', {}, callback );
                 } )
             } else {
-                publicRequest( wapi + 'v3/systemStatus.html', {}, callback );
+                publicRequest( sapi + 'v1/system/status', {}, callback );
             }
         },
 
@@ -3461,7 +3459,7 @@ let api = function Binance( options = {} ) {
         * @return {promise or undefined} - omitting the callback returns a promise
         */
         withdraw: function ( asset, address, amount, addressTag = false, callback = false, name = false ) {
-            let params = { asset, address, amount };
+            let params = { coin: asset, address, amount };
             if ( name ) params.name = name;
             if ( addressTag ) params.addressTag = addressTag;
             if ( !callback ) {
@@ -3473,10 +3471,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    signedRequest( wapi + 'v3/withdraw.html', params, callback, 'POST' );
+                    signedRequest( sapi + 'v1/capital/withdraw/apply', params, callback, 'POST' );
                 } )
             } else {
-                signedRequest( wapi + 'v3/withdraw.html', params, callback, 'POST' );
+                signedRequest( sapi + 'v1/capital/withdraw/apply', params, callback, 'POST' );
             }
         },
 
@@ -3544,10 +3542,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    signedRequest( wapi + 'v3/depositAddress.html', { asset: asset }, callback );
+                    signedRequest( sapi + 'v1/capital/deposit/address', { coin: asset }, callback );
                 } )
             } else {
-                signedRequest( wapi + 'v3/depositAddress.html', { asset: asset }, callback );
+                signedRequest( sapi + 'v1/capital/deposit/address', { coin: asset }, callback );
             }
         },
 
@@ -3566,10 +3564,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    signedRequest( wapi + 'v3/accountStatus.html', {}, callback );
+                    signedRequest( sapi + 'v1/account/status', {}, callback );
                 } )
             } else {
-                signedRequest( wapi + 'v3/accountStatus.html', {}, callback );
+                signedRequest( sapi + 'v1/account/status', {}, callback );
             }
         },
 
@@ -3590,10 +3588,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    signedRequest( wapi + 'v3/tradeFee.html', params, callback );
+                    signedRequest( sapi + 'v1/asset/tradeFee', params, callback );
                 } )
             } else {
-                signedRequest( wapi + 'v3/tradeFee.html', params, callback );
+                signedRequest( sapi + 'v1/asset/tradeFee', params, callback );
             }
         },
 
@@ -3612,10 +3610,10 @@ let api = function Binance( options = {} ) {
                             resolve( response );
                         }
                     }
-                    signedRequest( wapi + 'v3/assetDetail.html', {}, callback );
+                    signedRequest( sapi + 'v1/asset/assetDetail', {}, callback );
                 } )
             } else {
-                signedRequest( wapi + 'v3/assetDetail.html', {}, callback );
+                signedRequest( sapi + 'v1/asset/assetDetail', {}, callback );
             }
         },
 
